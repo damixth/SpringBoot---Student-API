@@ -1,37 +1,44 @@
 package com.example.demo.student;
 
 import java.time.LocalDate;
+import java.time.Period;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("students")
 public class Student{
-    private Long id;
+
+    @Id
+    private String id;
     private String name;
     private String email;
     private LocalDate dob;
+    @Transient
     private Integer age;
 
     public Student() {
     }
 
-    public Student(Long id, String name, String email, LocalDate dob, Integer age) {
+    public Student(String id, String name, String email, LocalDate dob) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.dob = dob;
-        this.age = age;
     }
 
-    public Student(String name, String email, LocalDate dob, Integer age) {
+    public Student(String name, String email, LocalDate dob) {
         this.name = name;
         this.email = email;
         this.dob = dob;
-        this.age = age;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -60,7 +67,7 @@ public class Student{
     }
 
     public Integer getAge() {
-        return age;
+        return Period.between(this.dob, LocalDate.now()).getYears();
     }
 
     public void setAge(Integer age) {
