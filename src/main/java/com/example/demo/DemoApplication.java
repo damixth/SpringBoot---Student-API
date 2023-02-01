@@ -2,53 +2,48 @@ package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.example.demo.student.Student;
 import com.example.demo.student.StudentRepository;
 
 @SpringBootApplication
-@EnableMongoRepositories
-public class DemoApplication implements CommandLineRunner{
+public class DemoApplication {
 
-    @Autowired
-    StudentRepository studentRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 	}
 
-    @Override
-    public void run(String... args) throws Exception {
-       
-        System.out.println("------------------ CREATE Students --------------------------\n");
-        
-        createStudents();
-        
+    @Bean
+    CommandLineRunner runner(StudentRepository repository, MongoTemplate mongoTemplate){
+        return args -> {
+
+            String email1 = "damixth@gmail.com";
+            //String email2 = "tharani@gmail.com";
+
+            Student damith = new Student("Damith",
+            email1,
+            LocalDate.of(1999, Month.OCTOBER, 7),
+            LocalDateTime.now());
+
+
+            repository.findStudentByEmail(email1)
+                .ifPresentOrElse(s -> {
+                    System.out.println("This Student already exists!" );
+                    
+                }, () -> {
+                    System.out.println("Inserting student" );
+                    repository.insert(damith);
+                });
+        };
     }
 
-    private void createStudents() {
-
-        System.out.println("Data creation started...");
-
-        Student damith = new Student("Damith",
-                     "damixth@gmail.com",
-                     LocalDate.of(1999, Month.OCTOBER, 7));
-        Student tharani = new Student(
-                    "tharani",
-                    "tharani@gmail.com",
-                    LocalDate.of(1999, Month.JUNE, 24));
-
-        studentRepository.saveAll(List.of(damith, tharani));
-
-		
-    }
 }
-
