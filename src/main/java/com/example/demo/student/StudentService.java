@@ -1,5 +1,6 @@
 package com.example.demo.student;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -13,14 +14,24 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
-
     @GetMapping
     public List<Student> getStudents() {
 		    return studentRepository.findAll();
     }
 
     public void addNewStudent(Student student){
-        System.out.println("Added new student");
+    
+        if(studentRepository
+        .findStudentByEmail(student.getEmail()).isPresent()){
+            throw new IllegalStateException("This email already exists!" );
+        }
+
+        student.setCreated(LocalDateTime.now());
+    
+        studentRepository.save(student);
+    
+        System.out.println("Added new student"); 
+        
     }
 
 
